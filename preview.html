@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101114">
+<meta name="description" content="Jelajahi koleksi video STREAMLY.">
+<title>STREAMLY — Video Pilihan</title>
+<style>
+:root{color-scheme:dark;--bg:#101114;--panel:#1b1c22;--text:#f5f5f7;--muted:#a0a1ac;--accent:#ff3855}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#101114ed;border-bottom:1px solid #292a31;backdrop-filter:blur(12px)}
+nav{max-width:1150px;margin:auto;padding:16px 20px;display:flex;align-items:center;gap:20px}
+.logo{font-size:22px;font-weight:900;letter-spacing:-1px;white-space:nowrap}.logo span{color:var(--accent)}
+.search{width:100%;max-width:440px;margin-left:auto;background:var(--panel);color:white;border:1px solid #34353d;border-radius:12px;padding:12px 14px;font-size:14px}
+main{max-width:1150px;margin:auto;padding:25px 20px 45px}
+.hero{padding:clamp(25px,5vw,55px);border-radius:22px;background:radial-gradient(circle at 85% 20%,#8c294b 0,transparent 35%),linear-gradient(120deg,#202333,#382032);min-height:245px;display:flex;align-items:center}
+.hero h1{font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-1.8px;margin:12px 0}
+.hero p{max-width:480px;color:#d0cfd8;line-height:1.7;font-size:14px}
+.btn{border:0;background:var(--accent);color:white;border-radius:10px;padding:12px 16px;font-weight:bold;cursor:pointer}
+.heading{display:flex;justify-content:space-between;align-items:center;margin:30px 0 15px;gap:12px}
+.heading h2{font-size:21px;margin:0 0 6px}.heading p{font-size:12px;color:var(--muted);margin:0}
+.filters{display:flex;gap:8px;overflow:auto;padding:3px 0 13px}
+.filter{flex:none;border:1px solid #34353d;background:var(--panel);color:white;border-radius:30px;padding:9px 14px;cursor:pointer}
+.filter.active,.filter:hover{background:var(--accent);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:19px}
+.card{min-width:0;cursor:pointer}
+.thumb{aspect-ratio:16/10;border-radius:13px;overflow:hidden;position:relative;background:linear-gradient(135deg,#272c46,#9d3658);display:grid;place-items:center}
+.thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.play{z-index:1;background:#101114bb;border-radius:50%;width:45px;height:45px;display:grid;place-items:center}
+.duration{position:absolute;bottom:8px;right:8px;background:#000c;padding:4px 6px;border-radius:5px;font-size:11px;z-index:2}
+.info{padding:10px 2px}.info h3{font-size:14px;line-height:1.45;margin:0 0 6px}.info p{font-size:12px;color:var(--muted);margin:0}
+.empty{text-align:center;padding:40px;color:var(--muted);display:none}
+footer{border-top:1px solid #292a31;padding:22px 0;margin-top:40px;color:var(--muted);font-size:12px;line-height:1.7}
+.modal{display:none;position:fixed;inset:0;z-index:10;background:#000e;align-items:center;justify-content:center;padding:15px}
+.modal.open{display:flex}
+.dialog{width:min(850px,100%);background:#191a20;border:1px solid #383941;border-radius:16px;overflow:hidden}
+.modalbar{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.modalbar h2{font-size:16px;margin:0}
+.close{background:transparent;border:1px solid #444;color:white;border-radius:8px;padding:7px 12px;cursor:pointer}
+video{width:100%;max-height:70vh;background:#000;display:block}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){nav{padding:13px 15px;flex-wrap:wrap;gap:12px}.logo{font-size:20px}.search{order:3;max-width:none}main{padding:17px 15px 30px}.hero{min-height:250px;padding:25px 21px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 11px}.info h3{font-size:12px}.heading h2{font-size:19px}}
+@media(max-width:360px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><nav>
+  <div class="logo">STREAM<span>LY</span></div>
+  <input id="search" class="search" type="search" placeholder="Cari video..." aria-label="Cari video">
+</nav></header>
+<main>
+  <section class="hero">
+    <div>
+      <div style="color:#ffb8c3;font-size:12px;font-weight:bold;letter-spacing:1px">KOLEKSI VIDEO ANDA</div>
+      <h1>Putar. Jelajahi.<br>Temukan cerita.</h1>
+      <p>Temukan koleksi video terbaru di STREAMLY. Pilih video favorit Anda dan nikmati di perangkat pilihan.</p>
+      <button class="btn" onclick="document.getElementById('library').scrollIntoView({behavior:'smooth'})">Jelajahi video ↓</button>
+    </div>
+  </section>
+  <section id="library">
+    <div class="heading"><div><h2>Video terbaru</h2><p>Temukan video dari koleksi kami</p></div><span id="count" style="font-size:12px;color:#a0a1ac">0 video</span></div>
+    <div id="filters" class="filters"></div>
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty">Video tidak ditemukan.</div>
+  </section>
+  <footer><strong>STREAMLY</strong><br>Pengalaman menonton yang simpel.<br>Pastikan video yang diterbitkan merupakan konten milik Anda atau yang Anda punya izin untuk tayangkan.</footer>
+</main>
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="dialog">
+    <div class="modalbar"><h2 id="modalTitle">Pemutar video</h2><button id="close" class="close">Tutup ✕</button></div>
+    <video id="player" controls playsinline preload="metadata"></video>
+  </div>
+</div>
+<script>
+const sampleVideos = [
+  {title:"Contoh video STREAMLY",category:"Contoh",file:"",thumbnail:"",duration:""}
+];
+let videos = sampleVideos;
+let category = "Semua";
+const $ = id => document.getElementById(id);
+const grid = $("grid");
+
+function safeText(value){return String(value||"")}
+function render(){
+  const query=$("search").value.trim().toLowerCase();
+  const categories=["Semua",...new Set(videos.map(v=>v.category||"Lainnya"))];
+  $("filters").innerHTML="";
+  categories.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="filter"+(c===category?" active":"");
+    b.textContent=c;
+    b.onclick=()=>{category=c;render()};
+    $("filters").appendChild(b);
+  });
+  const list=videos.filter(v=>(category==="Semua"|| (v.category||"Lainnya")===category)&&
+    (safeText(v.title)+" "+safeText(v.category)).toLowerCase().includes(query));
+  grid.innerHTML="";
+  list.forEach(v=>{
+    const card=document.createElement("article");
+    card.className="card";
+    const thumb=document.createElement("div");
+    thumb.className="thumb";
+    if(v.thumbnail){
+      const img=document.createElement("img");
+      img.src=v.thumbnail;img.alt="";img.loading="lazy";
+      thumb.appendChild(img);
+    }
+    const play=document.createElement("span");
+    play.className="play";play.textContent="▶";thumb.appendChild(play);
+    if(v.duration){const d=document.createElement("span");d.className="duration";d.textContent=v.duration;thumb.appendChild(d)}
+    const info=document.createElement("div");info.className="info";
+    const h=document.createElement("h3");h.textContent=v.title||"Video tanpa judul";
+    const p=document.createElement("p");p.textContent=v.category||"Lainnya";
+    info.append(h,p);card.append(thumb,info);
+    card.onclick=()=>openVideo(v);
+    grid.appendChild(card);
+  });
+  $("count").textContent=list.length+" video";
+  $("empty").style.display=list.length?"none":"block";
+}
+function openVideo(v){
+  if(!v.file){alert("Ini video contoh. Tambahkan file video dan data video.json saat menyiapkan koleksi Anda.");return}
+  $("modalTitle").textContent=v.title||"Video";
+  $("player").src=v.file;
+  $("modal").classList.add("open");
+  $("player").play().catch(()=>{});
+}
+function closeVideo(){
+  $("player").pause();$("player").removeAttribute("src");$("player").load();
+  $("modal").classList.remove("open");
+}
+$("search").addEventListener("input",render);
+$("close").addEventListener("click",closeVideo);
+$("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeVideo()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeVideo()});
+fetch("./videos.json")
+  .then(r=>{if(!r.ok)throw Error("Daftar video belum dibuat");return r.json()})
+  .then(data=>{if(Array.isArray(data)){videos=data;render()}})
+  .catch(()=>render());
+</script>
+</body>
+</html>
